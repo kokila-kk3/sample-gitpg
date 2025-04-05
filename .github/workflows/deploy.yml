@@ -11,24 +11,22 @@ permissions:
   id-token: write
 
 jobs:
+  # Single deploy job no building
   deploy:
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
     runs-on: ubuntu-latest
-
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Step 2: List the contents of the repository to verify if 'public' is present
-    - name: List directory contents
-      run: ls -la
-
-    # Step 3: Upload the 'public' directory as an artifact for deployment
-    - name: Upload pages artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: public  # Make sure this is the path where your files are
-
-    # Step 4: Deploy to GitHub Pages
-    - name: Deploy to GitHub Pages
-      uses: actions/deploy-pages@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # upload entire directory
+          path: public
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
